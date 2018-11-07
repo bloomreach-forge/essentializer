@@ -117,5 +117,18 @@
     <url>https://issues.onehippo.com/browse/HIPFORGE</url>
   </issueManagement>
 
-
+  <developers>
+    <developer>
+      <name>marijan milicevic</name>
+      <id>machak</id>
+      <email>marijan . milicevic @ bloomreach . com</email>
+      <organization>BloomReach</organization>
+      <roles>
+        <role>Project Lead</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+2</timezone>
+    </developer>
+  </developers>
+  
 </project>
