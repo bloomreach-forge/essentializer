@@ -365,7 +365,29 @@ public class DataWrapper {
 
     public List<String> getPluginDependencies() {
         if (pluginDependencies == null) {
-            pluginDependencies = ImmutableList.of("skeleton", "enterpriseProject", "relevancePlugin", "personalization", "crisp");
+            pluginDependencies = ImmutableList.of(
+                    "skeleton",
+                    "enterpriseProject",
+                    "videoComponentPlugin",
+                    "urlrewriterPlugin",
+                    "sitemapPlugin",
+                    "taggingPlugin",
+                    "taxonomyPlugin",
+                    "seoPlugin",
+                    "selectionPlugin",
+                    "searchPlugin",
+                    "robotsPlugin",
+                    "relevanceCollectorsBundlePlugin",
+                    "luceneIndexExporter",
+                    "bannerPlugin",
+                    "projectsPlugin",
+                    "pollPlugin",
+                    "simpleContent",
+                    "relatedDocumentsPlugin",
+                    "imageComponentPlugin",
+                    "relevancePlugin",
+                    "personalization",
+                    "crisp");
         }
 
 
