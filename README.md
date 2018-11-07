@@ -35,3 +35,8 @@ Add following dependency to essentials/pom.xml
 Go to Essentials > Tools > Essentializer:
 
 http://localhost:8080/essentials/#/tools/essentializer
+
+Screenshot: 
+
+![Essentializer](/screen.png)
+
