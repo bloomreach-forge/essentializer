@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>29.4</version>
+    <version>29.6</version>
   </parent>
   
   <name>Hippo Essentials Essentializer</name>
@@ -32,7 +32,7 @@
 
   <properties>
     <junit.version>4.12</junit.version>
-    <essenitals.version>4.4.0-1</essenitals.version>
+    <essenitals.version>4.5.0</essenitals.version>
   </properties>
   <dependencies>
     <dependency>
@@ -77,12 +77,45 @@
   <build>
     <defaultGoal>package</defaultGoal>
   </build>
+
+
   <repositories>
     <repository>
-      <id>hippo-maven2</id>
-      <name>Hippo Maven 2 Repository</name>
-      <url>https://maven.onehippo.com/maven2/</url>
+      <id>hippo</id>
+      <name>Hippo maven 2 repository.</name>
+      <url>http://maven.onehippo.com/maven2/</url>
+    </repository>
+    <repository>
+      <id>hippo-maven2-forge</id>
+      <name>Hippo Maven 2 Forge</name>
+      <url>http://maven.onehippo.com/maven2-forge</url>
     </repository>
   </repositories>
+  <distributionManagement>
+    <repository>
+      <name>Hippo Maven 2 Forge Repository</name>
+      <id>hippo-maven2-forge</id>
+      <url>https://maven.onehippo.com/content/repositories/forge-releases/</url>
+      <uniqueVersion>false</uniqueVersion>
+    </repository>
+  </distributionManagement>
+  <scm>
+    <connection>scm:git:git@github.com:bloomreach-forge/essentializer.git</connection>
+    <developerConnection>scm:git:git@github.com:bloomreach-forge/essentializer.git</developerConnection>
+    <url>https://github.com/bloomreach-forge/essentializer.git</url>
+    <tag>HEAD</tag>
+  </scm>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Jira</system>
+    <url>https://issues.onehippo.com/browse/HIPFORGE</url>
+  </issueManagement>
+
 
 </project>
