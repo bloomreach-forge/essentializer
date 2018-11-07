@@ -1,0 +1,49 @@
+<!--
+  Copyright {{dateCurrentYear}}  Hippo B.V. (http://www.onehippo.com)
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<div class="panel panel-default" ng-controller="{{controllerName}}">
+  <div class="panel-heading"><h3>{{pluginName}}</h3></div>
+  <div class="panel-body">
+    <p>
+      {{pluginDescription}}
+    </p>
+    <form class="form-horizontal" novalidate name="form">
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Project namespace: <strong>{{data.namespace}}</strong>:</label>
+        <div class="col-sm-8">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Field *:</label>
+        <div class="col-sm-8" ng-class="form.exampleProperty.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.exampleProperty"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-8">
+          <button ng-disabled="!form.$valid" class="btn btn-primary" ng-click="run()">Run</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="panel-footer">
+
+  </div>
+</div>
+
+
+

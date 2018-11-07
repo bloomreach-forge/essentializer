@@ -1,0 +1,40 @@
+{
+  "@type": "plugin",
+  "id": "essentializer",
+  "name": "Essentializer",
+  "enterprise": true,
+  "icon": "/essentials/images/essentializer.png",
+  "introduction": "Generate Essentials Plugin",
+  "restClasses": [
+    "org.onehippo.cms7.essentials.essentializer.rest.EssentializerResource"
+  ],
+  "type": "tool",
+  "vendor": {
+    "@type": "vendor",
+    "name": "Hippo",
+    "url": "http://www.onehippo.com"
+  },
+  "categories": {
+    "application": [
+      "developer-tool",
+      "code generator",
+      "essentials"
+    ],
+    "type": [
+      "tool"
+    ],
+    "license": [
+      "community"
+    ]
+  },
+  "libraries": [
+    {
+      "items": [
+        {
+          "component": "essentializer",
+          "file": "essentializer.js"
+        }
+      ]
+    }
+  ]
+}

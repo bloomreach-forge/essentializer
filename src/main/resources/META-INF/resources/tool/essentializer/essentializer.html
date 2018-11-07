@@ -1,0 +1,302 @@
+<!--
+  Copyright 2018 Hippo B.V. (http://www.onehippo.com)
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<div class="panel panel-default" ng-controller="essentializerCtrl">
+  <style>
+    .chosen-container {
+      width: 100% !important;
+    }
+
+    .back-restore {
+      background-color: #d2e06e;
+    }
+
+    .back-delete {
+      background-color: #fe956e;
+    }
+  </style>
+  <div class="panel-heading"><h3>Generate Essentials Plugin</h3></div>
+  <div class="panel-body">
+    <p>
+      Select HST components and create Essentials plugin
+    </p>
+    <form class="form-horizontal" novalidate name="form">
+      <div class="form-group back-restore" ng-show="oldDataArray.length">
+        <label class="col-sm-4 control-label">Restore previous plugin settings:</label>
+        <div class="col-sm-6">
+          <select chosen
+                  class="form-control"
+                  ng-model="restorePluginData"
+                  ng-options="obj.pluginId for obj in oldDataArray track by obj.pluginId">
+            <option value="restorePluginData"></option>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <button ng-show="restorePluginData" class="btn btn-primary" style="margin-right: 10px" ng-click="restoreOldData(restorePluginData)">RESTORE: {{restorePluginData.pluginName}} ({{restorePluginData.pluginId}})</button>
+        </div>
+      </div>
+      <div class="form-group back-delete" ng-show="oldDataArray.length">
+        <label class="col-sm-4 control-label">Delete previous plugin settings:</label>
+        <div class="col-sm-6">
+          <select chosen
+                  class="form-control"
+                  ng-model="deletePluginData"
+                  ng-options="obj.pluginId for obj in oldDataArray track by obj.pluginId">
+            <option value="deletePluginData"></option>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <button ng-show="deletePluginData" class="btn btn-danger" style="margin-right: 10px" ng-click="deleteOldData(deletePluginData)">DELETE: {{deletePluginData.pluginName}} ({{deletePluginData.pluginId}})</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Target directory *:</label>
+        <div class="col-sm-8" ng-class="form.targetDirectory.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.targetDirectory"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Essentials version *:</label>
+        <div class="col-sm-8" ng-class="form.essentialsVersion.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.essentialsVersion"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin type *:</label>
+        <div class="col-sm-8" ng-class="form.pluginType.$invalid ? 'bg-danger' : ''">
+          <select required chosen
+                  class="form-control"
+                  ng-model="data.pluginType"
+                  ng-options="obj for obj in data.pluginTypes">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin license *:</label>
+        <div class="col-sm-8" ng-class="form.licenseTypes.$invalid ? 'bg-danger' : ''">
+          <select required chosen
+                  class="form-control"
+                  ng-model="data.license"
+                  ng-options="obj for obj in data.licenseTypes">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin (letters only) id *:</label>
+        <div class="col-sm-8" ng-class="form.pluginId.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.pluginId"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Group id *:</label>
+        <div class="col-sm-8" ng-class="form.groupId.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.groupId"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Artifact id *:</label>
+        <div class="col-sm-8" ng-class="form.artifactId.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.artifactId"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin name *:</label>
+        <div class="col-sm-8" ng-class="form.pluginName.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.pluginName"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin description *:</label>
+        <div class="col-sm-8" ng-class="form.pluginDescription.$invalid?'bg-danger':''">
+          <textarea class="form-control" required type="text" ng-model="data.pluginDescription" rows="5"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin version *:</label>
+        <div class="col-sm-8" ng-class="form.pluginVersion.$invalid?'bg-danger':''">
+          <input class="form-control" required type="text" ng-model="data.pluginVersion"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin dependencies:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedPluginDependencies" multiple
+                  ng-options="obj for obj in data.pluginDependencies"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Catalog components:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedCatalogComponents"
+                  ng-change="componentChange(data.selectedCatalogComponents)"
+                  ng-options="obj.label for obj in data.catalogComponents  track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Components:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedComponents"
+                  ng-change="componentChange(data.selectedComponents)"
+                  ng-options="obj.name for obj in data.components  track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Pages:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedPages"
+                  ng-options="obj.path for obj in data.pages track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Sitemap items:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedSitemapItems"
+                  ng-options="obj.path for obj in data.sitemapItems track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Menus:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedMenus"
+                  ng-options="obj.path for obj in data.menus track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Menu items:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedMenuItems"
+                  ng-options="obj.path for obj in data.menuItems track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Document types:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedDocumentTypes" multiple
+                  ng-options="item.name for item in data.documentTypes track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Content:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedContent" multiple
+                  ng-options="item.path for item in data.content track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Webfiles:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedWebFiles" multiple ng-options="item.path for item in data.webFiles  track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Sites:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedSites" multiple ng-options="item.path for item in data.sites  track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Mounts:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedMounts" multiple ng-options="item.path for item in data.mounts  track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Files:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedFiles" multiple ng-options="item.path for item in data.files  track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Yaml:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedYamlFiles" multiple ng-options="item.path for item in data.yamlFiles track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Yaml binaries:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedYamlBinaryFiles" multiple ng-options="item.path for item in data.yamlBinaryFiles track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Templates:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedTemplates" multiple ng-options="item as item.name for item in data.templates track by item.path"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Dependencies:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedDependencies" multiple ng-options="item as item.name for item in data.dependencies track by item.name"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Shared dependencies:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedSharedDependencies" multiple ng-options="item as item.name for item in data.sharedDependencies track by item.name"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="data.createInterface"> Create plugin (angular) interface and controller
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-8">
+          <button ng-disabled="!form.$valid" class="btn btn-primary" ng-click="run()">Generate plugin skeleton</button>
+          <button class="btn btn-primary pull-right" ng-click="save()">Save plugin settings</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="panel-footer">
+    <!--<button class="btn btn-primary" ng-click="run()">Generate</button>-->
+  </div>
+</div>
+
+
