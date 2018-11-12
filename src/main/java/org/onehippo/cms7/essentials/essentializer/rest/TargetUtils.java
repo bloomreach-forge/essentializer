@@ -104,6 +104,7 @@ public final class TargetUtils {
 
     private static final Logger log = LoggerFactory.getLogger(TargetUtils.class);
     private static final String HST_DEFAULT = "/hst:hst/hst:configurations/hst:default/";
+    private static final String HST_COMMON = "/hst:hst/hst:configurations/common/";
 
     private TargetUtils() {
     }
@@ -169,7 +170,7 @@ public final class TargetUtils {
 
     public static String getHstConfigurationTarget(final String path, final String nodeName) {
         String target = path;
-        if (!target.contains("/hst:hst/hst:configurations/hst:default/")) {
+        if (!target.contains("/hst:hst/hst:configurations/hst:default/") && !target.contains("/hst:hst/hst:configurations/common/")) {
             target = path.replaceAll("/hst:hst/hst:configurations/", "");
             target = target.substring(target.indexOf('/'));
             target = target.replaceAll(nodeName, "");
@@ -191,7 +192,7 @@ public final class TargetUtils {
     }
 
     public static String getTemplateTarget(final String path) {
-        if (path.startsWith(HST_DEFAULT)) {
+        if (path.startsWith(HST_DEFAULT) || path.startsWith(HST_COMMON)) {
             return path.substring(0, path.lastIndexOf('/'));
         }
         final String part = path.replaceAll("/hst:hst/hst:configurations/", "");

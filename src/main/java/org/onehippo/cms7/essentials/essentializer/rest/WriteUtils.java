@@ -251,12 +251,12 @@ public final class WriteUtils {
     }
 
     private static void writeHstPageContainers(final Set<InstructionData> instructions, final ServiceContext context) throws Exception {
-        final List<ComponentWrapper> components = context.data.getSelectedComponents();
-        if (components != null) {
-            for (ComponentWrapper component : components) {
-                final Node node = context.session.getNode(component.getPath());
+        final List<PageContainerWrapper> containers = context.data.getSelectedPageContainers();
+        if (containers != null) {
+            for (PageContainerWrapper container : containers) {
+                final Node node = context.session.getNode(container.getPath());
                 final String xml = processProjectFile(context, getNodeAsXml(node, true));
-                final InstructionData instructionData = new InstructionData(HST_PAGE_CONTAINER, component.getPath(), xml);
+                final InstructionData instructionData = new InstructionData(HST_PAGE_CONTAINER, container.getPath(), xml);
                 final String name = node.getName();
                 instructionData.setName(name);
                 instructions.add(instructionData);
@@ -790,6 +790,7 @@ public final class WriteUtils {
             final String instructionPackage = "org.onehippo.cms7.essentials." + pluginId + ".instructions";
             final String packageDir = DOT_PATTERN.matcher(instructionPackage).replaceAll(FS);
             final String directory = rootPath + FS + DIR_JAVA + FS + packageDir;
+            createDirectory(directory);
             final Map<String, Object> placeholderData = new HashMap<>(context.placeholderData);
             placeholderData.putAll(extraPlaceholders);
             final String instructionData = replaceResource(TPL_INSTRUCTION_VERSION, placeholderData);
@@ -1505,9 +1506,14 @@ public final class WriteUtils {
     }
 
     private static void writeToFile(final String data, final String path) throws IOException {
-        final File file = new File(path);
-        file.createNewFile();
-        GlobalUtils.writeToFile(data, file.toPath());
+        try {
+            final File file = new File(path);
+            file.createNewFile();
+            GlobalUtils.writeToFile(data, file.toPath());
+        } catch (IOException e) {
+            log.error("Error writing to: {}", path);
+            throw e;
+        }
     }
 
     private static String extractJcrContent(final Node node) throws RepositoryException {
