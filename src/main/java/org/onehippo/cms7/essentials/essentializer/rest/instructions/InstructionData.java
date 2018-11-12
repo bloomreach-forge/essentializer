@@ -91,6 +91,7 @@ public class InstructionData {
         HST_COMPONENT,
         HST_SITEMAP_ITEM,
         HST_SITE,
+        HST_PAGE_CONTAINER,
         HST_MOUNT,
         HST_MENU_ITEM,
         HST_MENU,

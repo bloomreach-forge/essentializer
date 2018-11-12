@@ -311,6 +311,7 @@
             data.selectedMenuItems = filterArray(oldData.selectedMenuItems, data.menuItems) || [];
             data.selectedMenus = filterArray(oldData.selectedMenus, data.menus) || [];
             data.selectedMounts = filterArray(oldData.selectedMounts, data.mounts) || [];
+            data.selectedPageContainers = filterArray(oldData.selectedPageContainers, data.pageContainers) || [];
             data.selectedSites = filterArray(oldData.selectedSites, data.sites) || [];
             data.selectedDocumentTypes = filterArray(oldData.selectedDocumentTypes, data.documentTypes) || [];
             data.selectedContent = filterArray(oldData.selectedContent, data.content) || [];

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -144,6 +145,7 @@ public final class EssentializerUtils {
         data.setFiles(fetchFiles(context));
         data.setWebFiles(fetchWebFiles(context));
         data.setMenuItems(fetchMenuItems(context));
+        data.setPageContainers(fetchPageContainers(context));
         data.setMenus(fetchMenus(context));
         data.setMounts(fetchMounts(context));
         data.setSites(fetchSites(context));
@@ -158,6 +160,28 @@ public final class EssentializerUtils {
         data.setYamlBinaryFiles(fetchYamBinaryFiles(context));
         data.setContent(fetchContent(context));
         return data;
+    }
+
+    private static List<PageContainerWrapper> fetchPageContainers(final ServiceContext context) throws RepositoryException {
+        final List<PageContainerWrapper> templates = new ArrayList<>();
+        final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
+        @SuppressWarnings("deprecation")
+        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:containercomponentfolder)", Query.XPATH);
+        final QueryResult result = query.execute();
+        final NodeIterator nodes = result.getNodes();
+        while (nodes.hasNext()) {
+            final Node node = nodes.nextNode();
+            final String name = node.getName();
+            if (name.equals("hst:containers")) {
+                continue;
+            }
+            final PageContainerWrapper wrapper = new PageContainerWrapper();
+            wrapper.setPath(node.getPath());
+            wrapper.setName(name);
+            templates.add(wrapper);
+        }
+
+        return templates;
     }
 
     public static List<ContentWrapper> fetchContent(final ServiceContext context) throws RepositoryException {

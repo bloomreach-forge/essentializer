@@ -42,6 +42,8 @@ public class DataWrapper {
     private boolean createInterface;
 
 
+    private List<PageContainerWrapper> pageContainers;
+    private List<PageContainerWrapper> selectedPageContainers;
     private List<PageWrapper> pages;
     private List<PageWrapper> selectedPages;
     private List<ContentWrapper> content;
@@ -82,6 +84,22 @@ public class DataWrapper {
     private List<WebFileWrapper> selectedWebFiles;
     private List<DocumentTypeWrapper> selectedDocumentTypes;
     private List<FileWrapper> selectedFiles;
+
+    public List<PageContainerWrapper> getPageContainers() {
+        return pageContainers;
+    }
+
+    public void setPageContainers(final List<PageContainerWrapper> pageContainers) {
+        this.pageContainers = pageContainers;
+    }
+
+    public List<PageContainerWrapper> getSelectedPageContainers() {
+        return selectedPageContainers;
+    }
+
+    public void setSelectedPageContainers(final List<PageContainerWrapper> selectedPageContainers) {
+        this.selectedPageContainers = selectedPageContainers;
+    }
 
     public List<SiteWrapper> getSites() {
         return sites;

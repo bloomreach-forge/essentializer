@@ -141,7 +141,7 @@ public final class WriteUtils {
     private static final Pattern INVALID_CHARS_PATTERN = Pattern.compile("_-");
     private static final Pattern DOT_PATTERN = Pattern.compile("\\.");
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("package\\s+([\\w.]+);");
-    private static final String HST_DEFAULT = "/hst:hst/hst:configurations/hst:default/";
+
     private static final String ACTION_COPY = "copy";
     private static final Pattern PATTERN_VERSION = Pattern.compile("\\$\\{(.*)}");
 
@@ -194,6 +194,7 @@ public final class WriteUtils {
         writeHstMenus(instructions, context);
         // component
         writeHstComponents(instructions, context);
+        writeHstPageContainers(instructions, context);
         // dependencies
         writeDependencies(instructions, DEPENDENCY, context.data.getSelectedDependencies(), context);
         // shared dependencies
@@ -242,6 +243,20 @@ public final class WriteUtils {
                 final Node node = context.session.getNode(component.getPath());
                 final String xml = processProjectFile(context, getNodeAsXml(node, true));
                 final InstructionData instructionData = new InstructionData(HST_COMPONENT, component.getPath(), xml);
+                final String name = node.getName();
+                instructionData.setName(name);
+                instructions.add(instructionData);
+            }
+        }
+    }
+
+    private static void writeHstPageContainers(final Set<InstructionData> instructions, final ServiceContext context) throws Exception {
+        final List<ComponentWrapper> components = context.data.getSelectedComponents();
+        if (components != null) {
+            for (ComponentWrapper component : components) {
+                final Node node = context.session.getNode(component.getPath());
+                final String xml = processProjectFile(context, getNodeAsXml(node, true));
+                final InstructionData instructionData = new InstructionData(HST_PAGE_CONTAINER, component.getPath(), xml);
                 final String name = node.getName();
                 instructionData.setName(name);
                 instructions.add(instructionData);
@@ -471,6 +486,9 @@ public final class WriteUtils {
                 case HST_COMPONENT:
                     copyHstComponent(set, instruction, rootPath, context);
                     break;
+                case HST_PAGE_CONTAINER:
+                    copyHstPageContainer(set, instruction, rootPath, context);
+                    break;
                 case YAML_FILE:
                     copyYamlFile(set, instruction, rootPath, context);
                     break;
@@ -621,7 +639,7 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
         xmlInstruction.setAction(ACTION_COPY);
         xmlInstruction.setSource(resourceFolder + '/' + fileName);
-        xmlInstruction.setTarget(getPageTarget(instruction.getPath()));
+        xmlInstruction.setTarget(TargetUtils.getPageTarget(instruction.getPath()));
         set.addInstruction(xmlInstruction);
     }
 
@@ -637,24 +655,29 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
         xmlInstruction.setAction(ACTION_COPY);
         xmlInstruction.setSource(resourceFolder + '/' + fileName);
-        xmlInstruction.setTarget(getComponentTarget(instruction.getPath()));
+        xmlInstruction.setTarget(TargetUtils.getComponentTarget(instruction.getPath()));
         set.addInstruction(xmlInstruction);
 
     }
 
-    private static String getComponentTarget(final String path) {
-        if (path.startsWith("/hst:hst/hst:configurations/common") || path.startsWith("/hst:hst/hst:configurations/hst:default")) {
-            return path.substring(0, path.lastIndexOf('/'));
-        }
-        return "/hst:hst/hst:configurations/{{namespace}}/hst:components";
+    private static void copyHstPageContainer(final PluginInstructionSet set, final InstructionData instruction, final String rootPath, final ServiceContext context) throws IOException {
+        final XmlInstruction xmlInstruction = new XmlInstruction();
+        final String resourceFolder = "hstPageContainers";
+        final String subDir = DIR_RESOURCES + FS + resourceFolder;
+        final String directory = rootPath + FS + subDir;
+        createDirectory(directory);
+        final String fileName = instruction.getName() + ".xml";
+        final String data = instruction.getData();
+        final String target = directory + FS + fileName;
+        FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
+        xmlInstruction.setAction(ACTION_COPY);
+        xmlInstruction.setSource(resourceFolder + '/' + fileName);
+        xmlInstruction.setTarget(TargetUtils.getContainerTarget(instruction.getPath()));
+        set.addInstruction(xmlInstruction);
+
     }
 
-    private static String getPageTarget(final String path) {
-        if (path.startsWith("/hst:hst/hst:configurations/common") || path.startsWith("/hst:hst/hst:configurations/hst:default")) {
-            return path.substring(0, path.lastIndexOf('/'));
-        }
-        return "/hst:hst/hst:configurations/{{namespace}}/hst:pages";
-    }
+
 
     private static void copyHstSitemapItem(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
@@ -668,7 +691,7 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
         xmlInstruction.setAction(ACTION_COPY);
         xmlInstruction.setSource(resourceFolder + '/' + fileName);
-        xmlInstruction.setTarget(getSitemapTarget(instruction.getPath()));
+        xmlInstruction.setTarget(TargetUtils.getSitemapTarget(instruction.getPath()));
         set.addInstruction(xmlInstruction);
     }
 
@@ -719,7 +742,7 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
         xmlInstruction.setAction(ACTION_COPY);
         xmlInstruction.setSource(resourceFolder + '/' + fileName);
-        xmlInstruction.setTarget(getMenuItemTarget(instruction.getPath()));
+        xmlInstruction.setTarget(TargetUtils.getMenuItemTarget(instruction.getPath()));
         set.addInstruction(xmlInstruction);
     }
 
@@ -735,27 +758,10 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(data.getBytes()), new File(target));
         xmlInstruction.setAction(ACTION_COPY);
         xmlInstruction.setSource(resourceFolder + '/' + fileName);
-        xmlInstruction.setTarget(getMenuItemTarget(instruction.getPath()));
+        xmlInstruction.setTarget(TargetUtils.getMenuItemTarget(instruction.getPath()));
         set.addInstruction(xmlInstruction);
     }
 
-    private static String getSitemapTarget(final String path) {
-        if (path.startsWith("/hst:hst/hst:configurations/common") || path.startsWith("/hst:hst/hst:configurations/hst:default")) {
-            return path.substring(0, path.lastIndexOf('/'));
-        }
-        return "/hst:hst/hst:configurations/{{namespace}}/hst:sitemap";
-    }
-
-
-    private static String getMenuItemTarget(final String path) {
-        if (path.startsWith("/hst:hst/hst:configurations/common") || path.startsWith("/hst:hst/hst:configurations/hst:default")) {
-            return path.substring(0, path.lastIndexOf('/'));
-        }
-        final String start = "/hst:hst/hst:configurations/";
-        final String cleaned = path.substring(start.length());
-        final String secondPart = cleaned.substring(cleaned.indexOf('/'));
-        return start + "{{namespace}}" + secondPart.substring(0, secondPart.lastIndexOf('/'));
-    }
 
 
     private static void copyDependency(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context) {
@@ -779,7 +785,7 @@ public final class WriteUtils {
             // create placeholders
             final Map<String, Object> extraPlaceholders = new HashMap<>();
             final String versionData = Joiner.on("\",\"").withKeyValueSeparator("\",\"").join(data);
-            extraPlaceholders.put(PH_VERSION_INSTRUCTION_DATA, '"' +versionData + '"');
+            extraPlaceholders.put(PH_VERSION_INSTRUCTION_DATA, '"' + versionData + '"');
             log.info("versionData {}", versionData);
             final String instructionPackage = "org.onehippo.cms7.essentials." + pluginId + ".instructions";
             final String packageDir = DOT_PATTERN.matcher(instructionPackage).replaceAll(FS);
@@ -893,8 +899,8 @@ public final class WriteUtils {
      * NOTE: 2-pass replacement is needed because we can have prefix and suffix replacement
      */
     private static String processProjectFile(final ServiceContext context, String text) {
-            final String firstProcess = processProjectFileOnce(context, text);
-            return processProjectFileOnce(context, firstProcess);
+        final String firstProcess = processProjectFileOnce(context, text);
+        return processProjectFileOnce(context, firstProcess);
     }
 
     private static String processProjectFileOnce(final ServiceContext context, String text) {
@@ -966,25 +972,13 @@ public final class WriteUtils {
     }
 
     private static String bestPathForModule(final ServiceContext context, final String path, final ProjectService projectService) {
-        final Module module = getFileTarget(path, context);
+        final Module module = TargetUtils.getFileTarget(path, context);
         final String modulePath = projectService.getBasePathForModule(module).toString();
         final String subPath = path.substring(modulePath.length());
         // siteRoot, cmsRoot etc.
         return "{{" + module.getName() + "Root}}" + subPath;
     }
 
-    private static Module getFileTarget(final String filePath, final ServiceContext context) {
-        final ProjectService projectService = context.projectService;
-        final List<Module> modules = ImmutableList.of(Module.SITE, Module.CMS);
-        for (Module module : modules) {
-            final Path path = projectService.getBasePathForModule(module);
-            if (filePath.startsWith(path.toString())) {
-                return module;
-            }
-        }
-
-        return Module.PROJECT;
-    }
 
 
     private static void writeWebfiles(final Set<InstructionData> instructions, final ServiceContext context) {
@@ -1026,7 +1020,7 @@ public final class WriteUtils {
         fileInstruction.setAction(ACTION_COPY);
 
         final String path = instruction.getPath();
-        fileInstruction.setTarget(getWebfileTarget(context, path));
+        fileInstruction.setTarget(TargetUtils.getWebfileTarget(context, path));
         fileInstruction.setBinary(binary);
 
         final String fileName = path.substring(path.lastIndexOf('/') + 1);
@@ -1045,10 +1039,8 @@ public final class WriteUtils {
         set.addInstruction(fileInstruction);
     }
 
-    private static String getWebfileTarget(final ServiceContext context, final String path) {
-        final String projectNamespace = context.settingsService.getSettings().getProjectNamespace();
-        return path.replace("/webfiles/site", "{{webfilesRoot}}").replace(projectNamespace, "{{namespace}}");
-    }
+
+
 
     private static void copyFtlWebFile(final PluginInstructionSet set, final InstructionData instruction, final String rootPath) throws IOException {
         final String resourceDirectory = "freemarker";
@@ -1058,7 +1050,7 @@ public final class WriteUtils {
         final String fileName = path.substring(path.lastIndexOf('/'));
         final String source = resourceDirectory + fileName;
         freemarker.setSource(source);
-        freemarker.setTarget(getFreemarkerTarget(path));
+        freemarker.setTarget(TargetUtils.getFreemarkerTarget(path));
         log.info("instruction {}", instruction);
         set.addInstruction(freemarker);
         // copy file:
@@ -1067,28 +1059,21 @@ public final class WriteUtils {
         FileUtils.copyInputStreamToFile(new ByteArrayInputStream(instruction.getData().getBytes()), new File(directory + FS + fileName));
     }
 
-    private static String getFreemarkerTarget(final String path) {
-        final String prefix = "/webfiles/site/freemarker";
-        if (path.contains("hstdefault")) {
-            return path.replaceAll(prefix, "{{freemarkerRoot}}");
-        }
-        final String ourPath = path.substring(prefix.length() + 1);
-        return "{{freemarkerRoot}}/{{namespace}}" + ourPath.substring(ourPath.indexOf('/'));
-    }
+
 
     private static void copyTemplateXml(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final String data = instruction.getData();
         final XmlInstruction xmlInstruction = new XmlInstruction();
         xmlInstruction.setAction(ACTION_COPY);
         final String path = instruction.getPath();
-        final String webfileTarget = getTemplateTarget(path);
+        final String webfileTarget = TargetUtils.getTemplateTarget(path);
         xmlInstruction.setTarget(webfileTarget);
         // source:
         String xml = data;
         final String xpath = "/sv:node/sv:property[@sv:name = 'hst:renderpath']/sv:value";
         final String renderPath = getXmlNodeValue(data, xpath);
         if (!Strings.isNullOrEmpty(renderPath)) {
-            final String newPath = getNamespacedRenderPath(renderPath);
+            final String newPath = TargetUtils.getNamespacedRenderPath(renderPath);
             xml = replaceValue(xml, xpath, newPath);
         }
         // create xml file:
@@ -1105,25 +1090,7 @@ public final class WriteUtils {
         set.addInstruction(xmlInstruction);
     }
 
-    public static String getNamespacedRenderPath(final String renderPath) {
-        if (renderPath.contains("/hstdefault/")) {
-            return renderPath;
-        }
 
-        final String start = "webfile:/freemarker/";
-        final String path = renderPath.replaceAll(start, "");
-        return start + "{{namespace}}" + path.substring(path.indexOf('/'));
-
-    }
-
-    public static String getTemplateTarget(final String path) {
-        if (path.startsWith(HST_DEFAULT)) {
-            return path.substring(0, path.lastIndexOf('/'));
-        }
-        final String part = path.replaceAll("/hst:hst/hst:configurations/", "");
-        final String ourPath = "/hst:hst/hst:configurations/{{namespace}}" + part.substring(part.indexOf('/'));
-        return ourPath.substring(0, ourPath.lastIndexOf('/'));
-    }
 
     private static void writeTemplates(final Set<InstructionData> instructions, final ServiceContext context) throws Exception {
         final List<TemplateWrapper> templates = context.data.getSelectedTemplates();
@@ -1231,7 +1198,7 @@ public final class WriteUtils {
         final String path = instruction.getPath();
         final String nodeName = path.substring(path.lastIndexOf('/') + 1);
         final String fileName = nodeName + ".xml";
-        String target = getHstConfigurationTarget(path, nodeName);
+        String target = TargetUtils.getHstConfigurationTarget(path, nodeName);
         xmlInstruction.setTarget(target);
         xmlInstruction.setSource(sourceDirectory + '/' + fileName);
         final String directory = rootPath + FS + DIR_RESOURCES + FS + sourceDirectory;
@@ -1241,17 +1208,7 @@ public final class WriteUtils {
         set.addInstruction(xmlInstruction);
     }
 
-    private static String getHstConfigurationTarget(final String path, final String nodeName) {
-        String target = path;
-        if (!target.contains("/hst:hst/hst:configurations/hst:default/")) {
-            target = path.replaceAll("/hst:hst/hst:configurations/", "");
-            target = target.substring(target.indexOf('/'));
-            target = target.replaceAll(nodeName, "");
-            target = "/hst:hst/hst:configurations/{{namespace}}" + target;
-        }
-        return target.replaceAll('/' + nodeName, "");
 
-    }
 
     private static void copyJavaFile(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final FileInstruction fileInstruction = new FileInstruction();
@@ -1670,6 +1627,7 @@ public final class WriteUtils {
 
     private WriteUtils() {
     }
+
 
 
 }

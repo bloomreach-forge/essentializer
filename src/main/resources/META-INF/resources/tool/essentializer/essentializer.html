@@ -175,6 +175,17 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="col-sm-4 control-label">Page containers:</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" multiple
+                  class="form-control"
+                  ng-model="data.selectedPageContainers"
+                  ng-options="obj.path for obj in data.pageContainers track by obj.path">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="col-sm-4 control-label">Sitemap items:</label>
         <div class="col-sm-8">
           <select chosen search-contains="true" multiple
