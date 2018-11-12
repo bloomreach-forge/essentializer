@@ -144,6 +144,7 @@ public final class WriteUtils {
 
     private static final String ACTION_COPY = "copy";
     private static final Pattern PATTERN_VERSION = Pattern.compile("\\$\\{(.*)}");
+    public static final String DEFAULT_PLUGIN_PACKAGE = "org.onehippo.cms7.essentials.";
 
     public static UserFeedback createPlugin(final ServiceContext context) throws Exception {
         final File root = createDirectory(context.data.getTargetDirectory() + FS + context.data.getArtifactId());
@@ -781,13 +782,13 @@ public final class WriteUtils {
         if (!empty) {
             final ExecuteInstruction versionInstruction = new ExecuteInstruction();
             final String pluginId = context.data.getPluginId();
-            final String instructionClazz = "org.onehippo.cms7.essentials." + pluginId + ".instructions.AddVersionsInstruction";
+            final String instructionClazz = DEFAULT_PLUGIN_PACKAGE + pluginId + ".instructions.AddVersionsInstruction";
             // create placeholders
             final Map<String, Object> extraPlaceholders = new HashMap<>();
             final String versionData = Joiner.on("\",\"").withKeyValueSeparator("\",\"").join(data);
             extraPlaceholders.put(PH_VERSION_INSTRUCTION_DATA, '"' + versionData + '"');
             log.info("versionData {}", versionData);
-            final String instructionPackage = "org.onehippo.cms7.essentials." + pluginId + ".instructions";
+            final String instructionPackage = DEFAULT_PLUGIN_PACKAGE + pluginId + ".instructions";
             final String packageDir = DOT_PATTERN.matcher(instructionPackage).replaceAll(FS);
             final String directory = rootPath + FS + DIR_JAVA + FS + packageDir;
             createDirectory(directory);
@@ -808,9 +809,9 @@ public final class WriteUtils {
         final DependencyWrapper dependency = (DependencyWrapper) instruction.getRawData();
 
         final String pluginId = context.data.getPluginId();
-        final String instructionPackage = "org.onehippo.cms7.essentials." + pluginId + ".instructions";
+        final String instructionPackage = DEFAULT_PLUGIN_PACKAGE + pluginId + ".instructions";
         final String essentializerInstructionName = getInstructionSuffix(set);
-        final String instructionClazz = "org.onehippo.cms7.essentials." + pluginId + ".instructions.SharedLibraryInstruction" + essentializerInstructionName;
+        final String instructionClazz = DEFAULT_PLUGIN_PACKAGE + pluginId + ".instructions.SharedLibraryInstruction" + essentializerInstructionName;
         final String packageDir = DOT_PATTERN.matcher(instructionPackage).replaceAll(FS);
         final String directory = rootPath + FS + DIR_JAVA + FS + packageDir;
         createDirectory(directory);
@@ -1358,7 +1359,7 @@ public final class WriteUtils {
         final DataWrapper data = context.data;
         if (data.isCreateInterface()) {
             final String pluginId = data.getPluginId();
-            final String packageDir = DOT_PATTERN.matcher(("org.onehippo.cms7.essentials." + pluginId + ".rest")).replaceAll(FS);
+            final String packageDir = DOT_PATTERN.matcher((DEFAULT_PLUGIN_PACKAGE + pluginId + ".rest")).replaceAll(FS);
             final String directory = rootPath + FS + DIR_JAVA + FS + packageDir;
             createDirectory(directory);
             // rest class:
@@ -1446,7 +1447,7 @@ public final class WriteUtils {
         // rest
         if (data.isCreateInterface()) {
             plugin.setHasConfiguration(true);
-            plugin.setRestClasses(new ImmutableList.Builder<String>().add("org.onehippo.cms7.essentials." + data.getPluginId() + ".rest.PluginResource").build());
+            plugin.setRestClasses(new ImmutableList.Builder<String>().add(DEFAULT_PLUGIN_PACKAGE + data.getPluginId() + ".rest.PluginResource").build());
         }
         final List<String> selectedPluginDependencies = data.getSelectedPluginDependencies();
         if (selectedPluginDependencies != null) {
