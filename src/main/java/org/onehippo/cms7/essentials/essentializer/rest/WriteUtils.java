@@ -91,6 +91,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.internal.util.ImmutableMap;
 
+import javassist.bytecode.InstructionPrinter;
 import static java.util.Comparator.comparingInt;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.EXCLUDED_KEYS;
@@ -630,7 +631,7 @@ public final class WriteUtils {
 
     private static void copyHstPage(final PluginInstructionSet set, final InstructionData instruction, final String rootPath, final ServiceContext context) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstPages";
+        final String resourceFolder = TargetUtils.createSubdirectory( context, "hstPages", instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -646,7 +647,7 @@ public final class WriteUtils {
 
     private static void copyHstComponent(final PluginInstructionSet set, final InstructionData instruction, final String rootPath, final ServiceContext context) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstComponents";
+        final String resourceFolder = TargetUtils.createSubdirectory(context, "hstComponents", instruction.getPath());;
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -663,7 +664,7 @@ public final class WriteUtils {
 
     private static void copyHstPageContainer(final PluginInstructionSet set, final InstructionData instruction, final String rootPath, final ServiceContext context) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstPageContainers";
+        final String resourceFolder = TargetUtils.createSubdirectory(context, "hstPageContainers", instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -682,7 +683,7 @@ public final class WriteUtils {
 
     private static void copyHstSitemapItem(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstSitemapItems";
+        final String resourceFolder = TargetUtils.createSubdirectory(context, "hstSitemapItems", instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -716,7 +717,7 @@ public final class WriteUtils {
 
     private static void copyHstMount(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstMount";
+        final String resourceFolder = TargetUtils.createSubdirectoryForMount(context, instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -733,7 +734,7 @@ public final class WriteUtils {
 
     private static void copyHstMenuItem(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstMenuItems";
+        final String resourceFolder = TargetUtils.createSubdirectory(context, "hstMenuItems", instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -749,7 +750,7 @@ public final class WriteUtils {
 
     private static void copyHstMenu(final PluginInstructionSet set, final InstructionData instruction, final ServiceContext context, final String rootPath) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
-        final String resourceFolder = "hstMenus";
+        final String resourceFolder = TargetUtils.createSubdirectory(context, "hstMenus", instruction.getPath());
         final String subDir = DIR_RESOURCES + FS + resourceFolder;
         final String directory = rootPath + FS + subDir;
         createDirectory(directory);
@@ -1080,7 +1081,7 @@ public final class WriteUtils {
         }
         // create xml file:
         final String fileName = path.substring(path.lastIndexOf('/') + 1) + ".xml";
-        final String sourceDirectory = "templates";
+        final String sourceDirectory = TargetUtils.createSubdirectory(context, "templates", instruction.getPath());
         xmlInstruction.setSource(sourceDirectory + '/' + fileName);
         final String directory = rootPath + FS + DIR_RESOURCES + FS + sourceDirectory;
         final String targetPath = directory + FS + fileName;
@@ -1196,12 +1197,12 @@ public final class WriteUtils {
     private static void copyCatalogComponentXmlFile(final PluginInstructionSet set, final InstructionData instruction, final String rootPath, final ServiceContext context) throws IOException {
         final XmlInstruction xmlInstruction = new XmlInstruction();
         xmlInstruction.setAction(ACTION_COPY);
-        final String sourceDirectory = "xml";
         final String path = instruction.getPath();
         final String nodeName = path.substring(path.lastIndexOf('/') + 1);
         final String fileName = nodeName + ".xml";
         String target = TargetUtils.getHstConfigurationTarget(path, nodeName);
         xmlInstruction.setTarget(target);
+        final String sourceDirectory = TargetUtils.createSubdirectory(context, "hstCatalogComponents", target);
         xmlInstruction.setSource(sourceDirectory + '/' + fileName);
         final String directory = rootPath + FS + DIR_RESOURCES + FS + sourceDirectory;
         final String targetPath = directory + FS + fileName;

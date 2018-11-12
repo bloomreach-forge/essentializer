@@ -16,89 +16,20 @@
 
 package org.onehippo.cms7.essentials.essentializer.rest;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.model.Model;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.hippoecm.repository.api.HippoSession;
-import org.onehippo.cms7.essentials.essentializer.rest.data.*;
-import org.onehippo.cms7.essentials.essentializer.rest.instructions.InstructionData;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.CndInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.ExecuteInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.FileInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.FreemarkerInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.MavenDependencyInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.PluginInstructionSet;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.PluginInstructions;
-import org.onehippo.cms7.essentials.plugin.sdk.instruction.XmlInstruction;
-import org.onehippo.cms7.essentials.plugin.sdk.utils.GlobalUtils;
-import org.onehippo.cms7.essentials.plugin.sdk.utils.MavenModelUtils;
-import org.onehippo.cms7.essentials.plugin.sdk.utils.TemplateUtils;
-import org.onehippo.cms7.essentials.sdk.api.install.Instruction;
 import org.onehippo.cms7.essentials.sdk.api.model.Module;
-import org.onehippo.cms7.essentials.sdk.api.model.rest.PluginDescriptor;
-import org.onehippo.cms7.essentials.sdk.api.model.rest.UserFeedback;
-import org.onehippo.cms7.essentials.sdk.api.service.PlaceholderService;
 import org.onehippo.cms7.essentials.sdk.api.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.ImmutableMap;
+import com.google.common.collect.Lists;
 
-import static java.util.Comparator.comparingInt;
-import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
-import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.EXCLUDED_KEYS;
-import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.INCLUDED_FILE_EXTENSIONS;
-import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.getProjectFiles;
-import static org.onehippo.cms7.essentials.essentializer.rest.instructions.InstructionData.TYPE;
-import static org.onehippo.cms7.essentials.essentializer.rest.instructions.InstructionData.TYPE.*;
-import static org.onehippo.cms7.essentials.plugin.sdk.utils.GlobalUtils.readStreamAsText;
+import static org.onehippo.cms7.essentials.essentializer.rest.WriteUtils.FS;
 
 public final class TargetUtils {
 
@@ -112,7 +43,9 @@ public final class TargetUtils {
 
     public static String getComponentTarget(final String path) {
         if (path.startsWith("/hst:hst/hst:configurations/common/hst:workspace/hst:containers")
-                || path.startsWith("/hst:hst/hst:configurations/hst:default/hst:workspace/hst:containers")) {
+                || path.startsWith("/hst:hst/hst:configurations/hst:default/hst:workspace/hst:containers"))
+
+        {
             return path.substring(0, path.lastIndexOf('/'));
         }
         return "/hst:hst/hst:configurations/{{namespace}}/hst:workspace/hst:containers";
@@ -179,7 +112,7 @@ public final class TargetUtils {
         return target.replaceAll('/' + nodeName, "");
 
     }
-    
+
     public static String getNamespacedRenderPath(final String renderPath) {
         if (renderPath.contains("/hstdefault/")) {
             return renderPath;
@@ -209,4 +142,23 @@ public final class TargetUtils {
         return "{{freemarkerRoot}}/{{namespace}}" + ourPath.substring(ourPath.indexOf('/'));
     }
 
+
+    public static String createSubdirectory(final ServiceContext context, final String defaultDir, final String target) {
+        log.info("target {}", target);
+        if (target.contains("hst:default")) {
+            return defaultDir + FS + "hstdefault";
+        } else if (target.contains("/common/")) {
+            return defaultDir + FS + "common";
+        }
+        return defaultDir + FS + "namespace";
+    }
+
+    public static String createSubdirectoryForMount(final ServiceContext context, final String path) {
+        final Iterable<String> pathParts = Splitter.on("/").split(path);
+        final List<String> parts = Lists.newArrayList(pathParts);
+        if (parts.size() > 1) {
+            return "hstMounts" + FS + parts.get(parts.size() - 2);
+        }
+        return "hstMounts";
+    }
 }
