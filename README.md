@@ -26,7 +26,7 @@ Add following dependency to essentials/pom.xml
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-essentials-plugin-essentializer</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 
 ```
