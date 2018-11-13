@@ -41,7 +41,7 @@ public final class TargetUtils {
     }
 
 
-    public static String getComponentTarget(final String path) {
+    public static String getContainerTarget(final String path) {
         if (path.startsWith("/hst:hst/hst:configurations/common/hst:workspace/hst:containers")
                 || path.startsWith("/hst:hst/hst:configurations/hst:default/hst:workspace/hst:containers"))
 
@@ -51,7 +51,7 @@ public final class TargetUtils {
         return "/hst:hst/hst:configurations/{{namespace}}/hst:workspace/hst:containers";
     }
 
-    public static String getContainerTarget(final String path) {
+    public static String getComponentTarget(final String path) {
         if (path.startsWith("/hst:hst/hst:configurations/common") || path.startsWith("/hst:hst/hst:configurations/hst:default")) {
             return path.substring(0, path.lastIndexOf('/'));
         }
