@@ -184,6 +184,7 @@
         $scope.pluginId = "essentializer";
         $scope.endpoint = essentialsRestService.baseUrl + '/' + $scope.pluginId;
         $scope.data = {};
+        $scope.showImport;
 
         function loadOldData() {
           var allData = R.getAll();
@@ -337,11 +338,26 @@
 
           });
         };
+
+
+        $scope.showImportWindow = function () {
+          $scope.showImport = true;
+        };
+        $scope.hideImportWindow = function () {
+          $scope.showImport = false;
+        };
+        $scope.importData = function () {
+          $scope.showImport = false;
+          var data = JSON.parse($scope.importDataJsonString);
+          $scope.restoreOldData(data);
+
+        };
+
         $scope.exportData = function (data) {
-          $scope.jsonData = JSON.stringify(data);
+          $scope.jsonExportData = JSON.stringify(data, null, 4);
         };
         $scope.closeExportWindow = function () {
-          $scope.jsonData = null;
+          $scope.jsonExportData = null;
         };
         $scope.save = function () {
           R.set($scope.data.pluginId, $scope.data);
@@ -349,7 +365,7 @@
         };
         $scope.run = function () {
           R.set($scope.data.pluginId, $scope.data);
-          $http.post($scope.endpoint, $scope.data).success(function (data) {
+          $http.post($scope.endpoint, $scope.data).success(function () {
             loadOldData();
           });
         };
