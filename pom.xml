@@ -28,7 +28,7 @@
   <name>Hippo Essentials Essentializer</name>
   <description>Hippo Essentials Essentializer</description>
   <artifactId>hippo-essentials-plugin-essentializer</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
 
   <properties>
     <junit.version>4.12</junit.version>
@@ -103,7 +103,7 @@
     <connection>scm:git:git@github.com:bloomreach-forge/essentializer.git</connection>
     <developerConnection>scm:git:git@github.com:bloomreach-forge/essentializer.git</developerConnection>
     <url>https://github.com/bloomreach-forge/essentializer.git</url>
-    <tag>HEAD</tag>
+    <tag>hippo-essentials-plugin-essentializer-1.0.4</tag>
   </scm>
   <licenses>
     <license>
