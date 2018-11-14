@@ -337,6 +337,12 @@
 
           });
         };
+        $scope.exportData = function (data) {
+          $scope.jsonData = JSON.stringify(data);
+        };
+        $scope.closeExportWindow = function () {
+          $scope.jsonData = null;
+        };
         $scope.save = function () {
           R.set($scope.data.pluginId, $scope.data);
           loadOldData();
