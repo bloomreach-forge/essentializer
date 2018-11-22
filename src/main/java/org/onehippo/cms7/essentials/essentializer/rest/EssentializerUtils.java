@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -84,6 +85,7 @@ public final class EssentializerUtils {
             .add(".pdf").add(".zip").add(".jar").add(".keystore").add(".jks").add(".p12").add(".pfx").add(".pem").add(".der").add(".crt").add(".cer")
             .build();
 
+    // TODO check if prefix is still valid
     public static final Set<String> EXCLUDE_SITEMAP_ITEMS = new ImmutableSet.Builder<String>()
             .add("/hst:hst/hst:configurations/hst:default/hst:sitemap/_any_.css").add("/hst:hst/hst:configurations/hst:default/hst:sitemap/_any_.CSS")
             .add("/hst:hst/hst:configurations/hst:default/hst:sitemap/_any_.gif").add("/hst:hst/hst:configurations/hst:default/hst:sitemap/_any_.GIF")
@@ -135,19 +137,53 @@ public final class EssentializerUtils {
     public static DataWrapper fetchData(final ServiceContext context) throws RepositoryException, IOException {
         final DataWrapper data = new DataWrapper();
         data.setEssentialsVersion(extractEssentialsVersion(context));
-        data.setCatalogComponents(fetchCatalogComponents(context));
-        data.setComponents(fetchComponents(context));
-        data.setPages(fetchPages(context));
-        data.setSitemapItems(fetchSitemapItems(context));
-        data.setTemplates(fetchTemplates(context));
+        Set<String> paths = createPaths(context, "/hst:configurations//element(*, hst:containeritemcomponent)");
+        for (String queryPath : paths) {
+            data.addCatalogComponents(fetchCatalogComponents(context, queryPath));
+        }
+
+        paths = createPaths(context, "/hst:configurations//element(*, hst:abstractcomponent)");
+        for (String queryPath : paths) {
+            data.addComponents(fetchComponents(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:configurations//element(*, hst:component)");
+        for (String queryPath : paths) {
+            data.addPages(fetchPages(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:configurations//element(*, hst:sitemapitem)");
+        for (String queryPath : paths) {
+            data.addSitemapItems(fetchSitemapItems(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:configurations//element(*, hst:template)");
+        for (String queryPath : paths) {
+            data.addTemplates(fetchTemplates(context, queryPath));
+        }
+
         data.setDocumentTypes(fetchDocumentTypes(context));
         data.setFiles(fetchFiles(context));
         data.setWebFiles(fetchWebFiles(context));
-        data.setMenuItems(fetchMenuItems(context));
-        data.setPageContainers(fetchPageContainers(context));
-        data.setMenus(fetchMenus(context));
-        data.setMounts(fetchMounts(context));
-        data.setSites(fetchSites(context));
+
+        paths = createPaths(context, "/hst:configurations//element(*, hst:sitemenuitem)");
+        for (String queryPath : paths) {
+            data.addMenuItems(fetchMenuItems(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:configurations//element(*, hst:containercomponentfolder)");
+        for (String queryPath : paths) {
+            data.addPageContainers(fetchPageContainers(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:configurations//element(*, hst:sitemenu)");
+        for (String queryPath : paths) {
+            data.addMenus(fetchMenus(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:hosts//element(*, hst:mount)");
+        for (String queryPath : paths) {
+            data.addMounts(fetchMounts(context, queryPath));
+        }
+        paths = createPaths(context, "/hst:sites//element(*, hst:site)");
+        for (String queryPath : paths) {
+            data.addSites(fetchSites(context, queryPath));
+        }
+
         final List<DependencyWrapper> dependencies = fetchDependencies(context);
         data.setDependencies(dependencies);
         final List<DependencyWrapper> sharedDependencies = dependencies
@@ -161,11 +197,22 @@ public final class EssentializerUtils {
         return data;
     }
 
-    private static List<PageContainerWrapper> fetchPageContainers(final ServiceContext context) throws RepositoryException {
+
+    private static Set<String> createPaths(final ServiceContext context, final String basePath) {
+        final Set<String> hstRoots = context.hstRoots;
+        final Set<String> paths = new HashSet<>();
+        for (String hstRoot : hstRoots) {
+            paths.add(hstRoot + basePath);
+        }
+        return paths;
+    }
+
+
+    private static List<PageContainerWrapper> fetchPageContainers(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<PageContainerWrapper> templates = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:containercomponentfolder)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -222,11 +269,11 @@ public final class EssentializerUtils {
         }
     }
 
-    public static List<TemplateWrapper> fetchTemplates(final ServiceContext context) throws RepositoryException {
+    public static List<TemplateWrapper> fetchTemplates(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<TemplateWrapper> templates = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:template)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -247,7 +294,11 @@ public final class EssentializerUtils {
             return null;
         }
 
-        final List<TemplateWrapper> templateWrappers = fetchTemplates(context);
+        final Set<String> paths = createPaths(context, "/hst:configurations//element(*, hst:template)");
+        final List<TemplateWrapper> templateWrappers = new ArrayList<>();
+        for (String path : paths) {
+            templateWrappers.addAll(fetchTemplates(context, path));
+        }
         for (TemplateWrapper templateWrapper : templateWrappers) {
             if (name.equals(templateWrapper.getName())) {
                 return templateWrapper;
@@ -320,7 +371,7 @@ public final class EssentializerUtils {
                 || file.contains(".git")
                 || file.contains(".svn")
                 || file.contains(".idea")
-                || file.contains(WriteUtils.FS+ "overlays" + WriteUtils.FS)
+                || file.contains(WriteUtils.FS + "overlays" + WriteUtils.FS)
                 || file.contains(WriteUtils.FS + "target" + WriteUtils.FS)) {
             log.debug("Skipping excluded folder {}", file);
             return true;
@@ -360,11 +411,11 @@ public final class EssentializerUtils {
     }
 
 
-    public static List<ComponentWrapper> fetchComponents(final ServiceContext context) throws RepositoryException {
+    public static List<ComponentWrapper> fetchComponents(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<ComponentWrapper> components = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:abstractcomponent)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -386,11 +437,11 @@ public final class EssentializerUtils {
     }
 
 
-    public static List<CatalogComponentWrapper> fetchCatalogComponents(final ServiceContext context) throws RepositoryException {
+    public static List<CatalogComponentWrapper> fetchCatalogComponents(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<CatalogComponentWrapper> components = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:containeritemcomponent)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -421,11 +472,11 @@ public final class EssentializerUtils {
         return components;
     }
 
-    public static List<PageWrapper> fetchPages(final ServiceContext context) throws RepositoryException {
+    public static List<PageWrapper> fetchPages(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<PageWrapper> components = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:component)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -443,11 +494,11 @@ public final class EssentializerUtils {
         return components;
     }
 
-    public static List<SitemapItemWrapper> fetchSitemapItems(final ServiceContext context) throws RepositoryException {
+    public static List<SitemapItemWrapper> fetchSitemapItems(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<SitemapItemWrapper> sitemapItems = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:sitemapitem)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -470,11 +521,11 @@ public final class EssentializerUtils {
         return sitemapItems;
     }
 
-    public static List<MenuItemWrapper> fetchMenuItems(final ServiceContext context) throws RepositoryException {
+    public static List<MenuItemWrapper> fetchMenuItems(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<MenuItemWrapper> menuItems = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:sitemenuitem)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -488,11 +539,11 @@ public final class EssentializerUtils {
         return menuItems;
     }
 
-    public static List<MenuWrapper> fetchMenus(final ServiceContext context) throws RepositoryException {
+    public static List<MenuWrapper> fetchMenus(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<MenuWrapper> menus = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:configurations//element(*, hst:sitemenu)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -506,11 +557,11 @@ public final class EssentializerUtils {
         return menus;
     }
 
-    public static List<MountWrapper> fetchMounts(final ServiceContext context) throws RepositoryException {
+    public static List<MountWrapper> fetchMounts(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<MountWrapper> mounts = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:hosts//element(*, hst:mount)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {
@@ -524,11 +575,11 @@ public final class EssentializerUtils {
         return mounts;
     }
 
-    public static List<SiteWrapper> fetchSites(final ServiceContext context) throws RepositoryException {
+    public static List<SiteWrapper> fetchSites(final ServiceContext context, final String queryPath) throws RepositoryException {
         final List<SiteWrapper> sites = new ArrayList<>();
         final QueryManager queryManager = context.session.getWorkspace().getQueryManager();
         @SuppressWarnings("deprecation")
-        final Query query = queryManager.createQuery("hst:hst/hst:sites//element(*, hst:site)", Query.XPATH);
+        final Query query = queryManager.createQuery(queryPath, Query.XPATH);
         final QueryResult result = query.execute();
         final NodeIterator nodes = result.getNodes();
         while (nodes.hasNext()) {

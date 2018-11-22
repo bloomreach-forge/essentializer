@@ -17,9 +17,10 @@
 package org.onehippo.cms7.essentials.essentializer.rest;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import javax.inject.Inject;
 import javax.jcr.Session;
 
 import org.onehippo.cms7.essentials.essentializer.rest.data.DataWrapper;
@@ -41,6 +42,7 @@ public class ServiceContext {
     public final DataWrapper data;
     public final Map<String, Object> placeholderData;
     public final Map<String, String> versionInstructionData;
+    public final Set<String> hstRoots;
 
     public ServiceContext(final JcrService jcrService, final PlaceholderService placeholderService, final ProjectService projectService,
                           final ContentTypeService contentTypeService, final TemplateQueryService templateQueryService, final SettingsService settingsService, final Session session,  final DataWrapper data) {
@@ -54,5 +56,6 @@ public class ServiceContext {
         this.data = data;
         this.placeholderData = WriteUtils.createPlaceHolders(placeholderService, data);
         this.versionInstructionData = new HashMap<>();
+        this.hstRoots = new HashSet<>();
     }
 }

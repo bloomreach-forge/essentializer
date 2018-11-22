@@ -16,7 +16,13 @@
 
 package org.onehippo.cms7.essentials.essentializer.rest;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -73,7 +79,10 @@ public class EssentializerResource {
                 log.error("No session found");
                 return new DataWrapper();
             }
-            return fetchData(createServiceContext(session, new DataWrapper()));
+            final ServiceContext context = createServiceContext(session, new DataWrapper());
+            final Set<String> hstRoots = fetchHstRoots(context);
+            context.hstRoots.addAll(hstRoots);
+            return fetchData(context);
         } finally {
             if (session != null) {
                 session.logout();
@@ -90,6 +99,8 @@ public class EssentializerResource {
         try {
 
             final ServiceContext context = createServiceContext(session, data);
+            final Set<String> hstRoots = fetchHstRoots(context);
+            context.hstRoots.addAll(hstRoots);
             return WriteUtils.createPlugin(context);
         } catch (Exception e) {
             log.error("Error creating plugin", e);
@@ -101,6 +112,19 @@ public class EssentializerResource {
         }
     }
 
+    private Set<String> fetchHstRoots(final ServiceContext context) throws RepositoryException {
+        final Node node = context.session.getNode("/");
+        final NodeIterator nodes = node.getNodes();
+        final Set<String> ourSet = new HashSet<>();
+        while (nodes.hasNext()) {
+            final Node n = nodes.nextNode();
+            if (n.isNodeType("hst:hst")) {
+                ourSet.add(n.getName());
+
+            }
+        }
+        return ourSet;
+    }
 
     private ServiceContext createServiceContext(final Session session, final DataWrapper data) {
         return new ServiceContext(jcrService, placeholderService, projectService, contentTypeService, templateQueryService, settingsService, session, data);

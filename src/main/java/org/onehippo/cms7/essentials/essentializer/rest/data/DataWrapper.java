@@ -16,6 +16,7 @@
 
 package org.onehippo.cms7.essentials.essentializer.rest.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils;
@@ -42,15 +43,15 @@ public class DataWrapper {
     private boolean createInterface;
 
 
-    private List<PageContainerWrapper> pageContainers;
+    private List<PageContainerWrapper> pageContainers = new ArrayList<>();
     private List<PageContainerWrapper> selectedPageContainers;
-    private List<PageWrapper> pages;
+    private List<PageWrapper> pages = new ArrayList<>();
     private List<PageWrapper> selectedPages;
     private List<ContentWrapper> content;
     private List<ContentWrapper> selectedContent;
 
     private List<SitemapItemWrapper> selectedSitemapItems;
-    private List<SitemapItemWrapper> sitemapItems;
+    private List<SitemapItemWrapper> sitemapItems = new ArrayList<>();
     private List<DependencyWrapper> dependencies;
     private List<DependencyWrapper> selectedDependencies;
     private List<DependencyWrapper> sharedDependencies;
@@ -59,22 +60,22 @@ public class DataWrapper {
     private List<YamlWrapper> selectedYamlFiles;
     private List<YamlBinaryWrapper> yamlBinaryFiles;
     private List<YamlBinaryWrapper> selectedYamlBinaryFiles;
-    private List<MenuItemWrapper> menuItems;
+    private List<MenuItemWrapper> menuItems = new ArrayList<>();
     private List<MenuItemWrapper> selectedMenuItems;
-    private List<MenuWrapper> menus;
+    private List<MenuWrapper> menus = new ArrayList<>();
     private List<MenuWrapper> selectedMenus;
-    private List<SiteWrapper> sites;
+    private List<SiteWrapper> sites = new ArrayList<>();
     private List<SiteWrapper> selectedSites;
-    private List<MountWrapper> mounts;
+    private List<MountWrapper> mounts = new ArrayList<>();
     private List<MountWrapper> selectedMounts;
 
 
     private List<String> selectedPluginDependencies;
     private List<String> pluginDependencies;
-    private List<CatalogComponentWrapper> catalogComponents;
-    private List<ComponentWrapper> components;
+    private List<CatalogComponentWrapper> catalogComponents = new ArrayList<>();
+    private List<ComponentWrapper> components = new ArrayList<>();
     private List<ComponentWrapper> selectedComponents;
-    private List<TemplateWrapper> templates;
+    private List<TemplateWrapper> templates = new ArrayList<>();
     private List<WebFileWrapper> webFiles;
     private List<DocumentTypeWrapper> documentTypes;
     private List<FileWrapper> files;
@@ -529,5 +530,45 @@ public class DataWrapper {
 
     public void setSelectedContent(final List<ContentWrapper> selectedContent) {
         this.selectedContent = selectedContent;
+    }
+
+    public void addCatalogComponents(final List<CatalogComponentWrapper> collection) {
+        catalogComponents.addAll(collection);
+    }
+
+    public void addComponents(final List<ComponentWrapper> collection) {
+        components.addAll(collection);
+    }
+
+    public void addPages(final List<PageWrapper> collection) {
+        pages.addAll(collection);
+    }
+
+    public void addSitemapItems(final List<SitemapItemWrapper> collection) {
+        sitemapItems.addAll(collection);
+    }
+
+    public void addTemplates(final List<TemplateWrapper> collection) {
+        templates.addAll(collection);
+    }
+
+    public void addMenuItems(final List<MenuItemWrapper> collection) {
+        menuItems.addAll(collection);
+    }
+
+    public void addPageContainers(final List<PageContainerWrapper> collection) {
+        pageContainers.addAll(collection);
+    }
+
+    public void addMenus(final List<MenuWrapper> collection) {
+        menus.addAll(collection);
+    }
+
+    public void addMounts(final List<MountWrapper> collection) {
+        mounts.addAll(collection);
+    }
+
+    public void addSites(final List<SiteWrapper> collections) {
+        sites.addAll(collections);
     }
 }
