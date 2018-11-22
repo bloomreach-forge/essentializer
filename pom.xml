@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>29.6</version>
+    <version>30-SNAPSHOT</version>
   </parent>
   
   <name>Hippo Essentials Essentializer</name>
@@ -32,7 +32,7 @@
 
   <properties>
     <junit.version>4.12</junit.version>
-    <essenitals.version>4.5.0</essenitals.version>
+    <essenitals.version>13.0.0-SNAPSHOT</essenitals.version>
   </properties>
   <dependencies>
     <dependency>

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -593,7 +592,7 @@ public final class EssentializerUtils {
     private static List<DependencyWrapper> fetchDependencies(final ServiceContext context) {
         final ProjectService projectService = context.projectService;
         final List<DependencyWrapper> dependencyWrappers = new ArrayList<>();
-        final List<Module> modules = ImmutableList.of(Module.PROJECT, Module.SITE, Module.CMS);
+        final List<Module> modules = ImmutableList.of(Module.PROJECT, Module.SITE, Module.CMS, Module.CMS_DEPENDENCIES, Module.HCM_HST_DEPENDENCIES, Module.SITE_WEBAPP, Module.SITE_DATA);
         for (Module module : modules) {
             final File file = projectService.getPomPathForModule(module).toFile();
             if (file != null) {

@@ -91,7 +91,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.internal.util.ImmutableMap;
 
-import javassist.bytecode.InstructionPrinter;
 import static java.util.Comparator.comparingInt;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.EXCLUDED_KEYS;
@@ -1457,7 +1456,7 @@ public final class WriteUtils {
                 final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
                 dependency.setPluginId(selectedPluginDependency);
                 dependency.setMinInstallStateForInstalling(null);
-                dependency.setMinInstallStateForBoarding(null);
+                dependency.setMinInstallStateForInstalling(null);
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);
