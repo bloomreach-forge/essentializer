@@ -161,4 +161,8 @@ public final class TargetUtils {
         }
         return "hstMounts";
     }
+
+    public static String replaceSubPaths(final ServiceContext context, final String path) {
+       return path.replaceAll('/' + context.settingsService.getSettings().getProjectNamespace() + '/', "/{{namespace}}/");
+    }
 }
