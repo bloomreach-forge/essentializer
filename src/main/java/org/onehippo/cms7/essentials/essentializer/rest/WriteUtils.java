@@ -76,6 +76,7 @@ import org.onehippo.cms7.essentials.plugin.sdk.utils.MavenModelUtils;
 import org.onehippo.cms7.essentials.plugin.sdk.utils.TemplateUtils;
 import org.onehippo.cms7.essentials.sdk.api.install.Instruction;
 import org.onehippo.cms7.essentials.sdk.api.model.Module;
+import org.onehippo.cms7.essentials.sdk.api.model.rest.InstallState;
 import org.onehippo.cms7.essentials.sdk.api.model.rest.PluginDescriptor;
 import org.onehippo.cms7.essentials.sdk.api.model.rest.UserFeedback;
 import org.onehippo.cms7.essentials.sdk.api.service.PlaceholderService;
@@ -1458,6 +1459,18 @@ public final class WriteUtils {
                 dependency.setPluginId(selectedPluginDependency);
                 dependency.setMinInstallStateForInstalling(null);
                 dependency.setMinInstallStateForInstalling(null);
+                pluginDependencies.add(dependency);
+            }
+            plugin.setPluginDependencies(pluginDependencies);
+        }
+        final List<String> selectedInstalledPluginDependencies = data.getSelectedInstalledPluginDependencies();
+        if (selectedInstalledPluginDependencies != null) {
+            final List<PluginDescriptor.Dependency> pluginDependencies = new ArrayList<>();
+            for (String selectedPluginDependency : selectedInstalledPluginDependencies) {
+                final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
+                dependency.setPluginId(selectedPluginDependency);
+                dependency.setMinInstallStateForInstalling(InstallState.INSTALLED.toString());
+                dependency.setMinInstallStateForBoarding(null);
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);

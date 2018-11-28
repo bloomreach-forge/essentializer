@@ -71,7 +71,9 @@ public class DataWrapper {
 
 
     private List<String> selectedPluginDependencies;
+    private List<String> selectedInstalledPluginDependencies;
     private List<String> pluginDependencies;
+    private List<String> installedPluginDependencies;
     private List<CatalogComponentWrapper> catalogComponents = new ArrayList<>();
     private List<ComponentWrapper> components = new ArrayList<>();
     private List<ComponentWrapper> selectedComponents;
@@ -85,6 +87,24 @@ public class DataWrapper {
     private List<WebFileWrapper> selectedWebFiles;
     private List<DocumentTypeWrapper> selectedDocumentTypes;
     private List<FileWrapper> selectedFiles;
+
+    public List<String> getSelectedInstalledPluginDependencies() {
+        return selectedInstalledPluginDependencies;
+    }
+
+    public void setSelectedInstalledPluginDependencies(final List<String> selectedInstalledPluginDependencies) {
+        this.selectedInstalledPluginDependencies = selectedInstalledPluginDependencies;
+    }
+
+    public List<String> getInstalledPluginDependencies() {
+        installedPluginDependencies = getPluginDependencies();
+        return installedPluginDependencies;
+    }
+
+    public void setInstalledPluginDependencies(final List<String> installedPluginDependencies) {
+        this.installedPluginDependencies = installedPluginDependencies;
+    }
+
 
     public List<PageContainerWrapper> getPageContainers() {
         return pageContainers;

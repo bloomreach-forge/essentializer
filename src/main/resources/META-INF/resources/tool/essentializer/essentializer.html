@@ -163,6 +163,13 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="col-sm-4 control-label">Plugin dependencies (installed state):</label>
+        <div class="col-sm-8">
+          <select chosen search-contains="true" class="form-control" ng-model="data.selectedInstalledPluginDependencies" multiple
+                  ng-options="obj for obj in data.installedPluginDependencies"></select>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="col-sm-4 control-label">Catalog components:</label>
         <div class="col-sm-8">
           <select chosen search-contains="true" multiple
