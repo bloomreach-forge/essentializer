@@ -903,7 +903,7 @@ public final class WriteUtils {
      */
     private static String processProjectFile(final ServiceContext context, String text) {
         final String firstProcess = processProjectFileOnce(context, text);
-        return processProjectFileOnce(context, firstProcess);
+        return TargetUtils.replaceSubPaths(context, processProjectFileOnce(context, firstProcess));
     }
 
     private static String processProjectFileOnce(final ServiceContext context, String text) {
@@ -979,7 +979,7 @@ public final class WriteUtils {
         final String modulePath = projectService.getBasePathForModule(module).toString();
         final String subPath = path.substring(modulePath.length());
         // siteRoot, cmsRoot etc.
-        return "{{" + module.getName() + "Root}}" + subPath;
+        return TargetUtils.replaceSubPaths(context, "{{" + module.getName() + "Root}}" + subPath);
     }
 
 
@@ -998,7 +998,7 @@ public final class WriteUtils {
 
     public static boolean isBinary(final String path) {
         final String extension = '.' + FilenameUtils.getExtension(path);
-        return BINARY_EXTENSIONS.contains(extension);
+        return BINARY_EXTENSIONS.contains(extension.toLowerCase());
 
     }
 
