@@ -860,6 +860,7 @@ public final class WriteUtils {
         fileInstruction.setSource(projectFiles + '/' + fileName);
         fileInstruction.setTarget(target);
         final boolean binary = isBinary(filePath);
+        fileInstruction.setBinary(binary);
         final String targetFile = directory + FS + fileName;
         if (!binary) {
             final StringBuilder builder = GlobalUtils.readTextFile(new File(filePath).toPath());
