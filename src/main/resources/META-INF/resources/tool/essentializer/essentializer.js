@@ -304,6 +304,7 @@
             data.pluginDescription = oldData.pluginDescription || data.pluginDescription;
             data.pluginVersion = oldData.pluginVersion || data.pluginVersion;
             data.selectedPluginDependencies = filterArray(oldData.selectedPluginDependencies, data.pluginDependencies) || [];
+            data.selectedInstalledPluginDependencies = filterArray(oldData.selectedInstalledPluginDependencies, data.installedPluginDependencies) || [];
             data.pluginType = oldData.pluginType || data.pluginType;
             data.selectedCatalogComponents = filterArray(oldData.selectedCatalogComponents, data.catalogComponents) || [];
             data.selectedComponents = filterArray(oldData.selectedComponents, data.components) || [];
