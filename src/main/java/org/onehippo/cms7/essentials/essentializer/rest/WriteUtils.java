@@ -1451,6 +1451,8 @@ public final class WriteUtils {
             plugin.setHasConfiguration(true);
             plugin.setRestClasses(new ImmutableList.Builder<String>().add(DEFAULT_PLUGIN_PACKAGE + data.getPluginId() + ".rest.PluginResource").build());
         }
+        final List<PluginDescriptor.Dependency> ourDependencies = new ArrayList<>();
+        plugin.setPluginDependencies(ourDependencies);
         final List<String> selectedPluginDependencies = data.getSelectedPluginDependencies();
         if (selectedPluginDependencies != null) {
             final List<PluginDescriptor.Dependency> pluginDependencies = new ArrayList<>();
@@ -1461,7 +1463,7 @@ public final class WriteUtils {
                 dependency.setMinInstallStateForBoarding(null);
                 pluginDependencies.add(dependency);
             }
-            plugin.setPluginDependencies(pluginDependencies);
+            ourDependencies.addAll(pluginDependencies);
         }
         final List<String> selectedInstalledPluginDependencies = data.getSelectedInstalledPluginDependencies();
         if (selectedInstalledPluginDependencies != null) {
@@ -1473,7 +1475,7 @@ public final class WriteUtils {
                 dependency.setMinInstallStateForBoarding(null);
                 pluginDependencies.add(dependency);
             }
-            plugin.setPluginDependencies(pluginDependencies);
+            ourDependencies.addAll(pluginDependencies);
         }
 
         final String descriptorData = JsonUtils.toJson(plugin);
