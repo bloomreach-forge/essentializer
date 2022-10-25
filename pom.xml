@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>30-SNAPSHOT</version>
+    <version>15.1.0</version>
   </parent>
   
   <name>Hippo Essentials Essentializer</name>
@@ -32,19 +32,19 @@
 
   <properties>
     <junit.version>4.12</junit.version>
-    <essenitals.version>13.0.0-SNAPSHOT</essenitals.version>
+    <essentials.version>15.1.0</essentials.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-essentials-plugin-sdk-api</artifactId>
-      <version>${essenitals.version}</version>
+      <version>${essentials.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-essentials-plugin-sdk-implementation</artifactId>
-      <version>${essenitals.version}</version>
+      <version>${essentials.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -83,12 +83,12 @@
     <repository>
       <id>hippo</id>
       <name>Hippo maven 2 repository.</name>
-      <url>http://maven.onehippo.com/maven2/</url>
+      <url>https://maven.onehippo.com/maven2/</url>
     </repository>
     <repository>
       <id>hippo-maven2-forge</id>
       <name>Hippo Maven 2 Forge</name>
-      <url>http://maven.onehippo.com/maven2-forge</url>
+      <url>https://maven.onehippo.com/maven2-forge</url>
     </repository>
   </repositories>
   <distributionManagement>

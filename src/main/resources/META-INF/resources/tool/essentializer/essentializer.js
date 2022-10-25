@@ -332,11 +332,11 @@
         $scope.init = function () {
           // set storage prefix
           R.p = "essentializer";
-          $http.get($scope.endpoint).success(function (data) {
-            $scope.data = data;
+          $http.get($scope.endpoint).then(function (data) {
+            $scope.data = data.data;
             loadOldData();
-
-
+          },function (error){
+            console.log(error, 'can not get data.');
           });
         };
 

@@ -54,6 +54,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -90,7 +91,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.ImmutableMap;
 
 import static java.util.Comparator.comparingInt;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
@@ -1470,7 +1470,7 @@ public final class WriteUtils {
                 final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
                 dependency.setPluginId(selectedPluginDependency);
                 dependency.setMinInstallStateForInstalling(InstallState.INSTALLED.toString());
-                dependency.setMinInstallStateForBoarding(null);
+                //dependency.setMinInstallStateForBoarding(null);
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);
