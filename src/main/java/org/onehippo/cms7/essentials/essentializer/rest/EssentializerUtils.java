@@ -53,8 +53,8 @@ import org.springframework.util.DigestUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.ImmutableMap;
 
 import static java.util.stream.Collectors.toList;
 
