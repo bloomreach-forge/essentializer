@@ -89,8 +89,8 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.ImmutableMap;
 
 import static java.util.Comparator.comparingInt;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
@@ -1457,8 +1457,7 @@ public final class WriteUtils {
             for (String selectedPluginDependency : selectedPluginDependencies) {
                 final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
                 dependency.setPluginId(selectedPluginDependency);
-                dependency.setMinInstallStateForInstalling(null);
-                dependency.setMinInstallStateForInstalling(null);
+                // NOTE: setMinInstallStateForInstalling is set to null for optional dependencies
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);
@@ -1470,7 +1469,7 @@ public final class WriteUtils {
                 final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
                 dependency.setPluginId(selectedPluginDependency);
                 dependency.setMinInstallStateForInstalling(InstallState.INSTALLED.toString());
-                dependency.setMinInstallStateForBoarding(null);
+                // NOTE: setMinInstallStateForBoarding removed - not available in SDK v15.7
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);
