@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -90,7 +90,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 
 import static java.util.Comparator.comparingInt;
 import static org.onehippo.cms7.essentials.essentializer.rest.EssentializerUtils.BINARY_EXTENSIONS;
@@ -1470,7 +1470,6 @@ public final class WriteUtils {
                 final PluginDescriptor.Dependency dependency = new PluginDescriptor.Dependency();
                 dependency.setPluginId(selectedPluginDependency);
                 dependency.setMinInstallStateForInstalling(InstallState.INSTALLED.toString());
-                dependency.setMinInstallStateForBoarding(null);
                 pluginDependencies.add(dependency);
             }
             plugin.setPluginDependencies(pluginDependencies);
